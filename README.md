@@ -9,6 +9,8 @@ Testing metricflow, dbt exposure and collibri - dbt on duckdb
 * Run `cd database && pwd` to get the full path to your database directory
 * Update the path in `profiles-example.yml` to point to your DuckDB database location
 
+<img width="1563" height="1128" alt="image" src="https://github.com/user-attachments/assets/7d28a936-43e1-443d-a766-85b14903707a" />
+
 ## 1. Metricflow
 
 🤓 Please run the following steps:
