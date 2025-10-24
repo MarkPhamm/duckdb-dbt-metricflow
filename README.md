@@ -4,10 +4,10 @@ Testing metricflow, dbt exposure and collibri - dbt on duckdb
 
 ## Set up
 
-Switch to the root directory of the generated sample project (e.g. `cd duckdb-dbt-metricflow`).
-   This enables use of the tutorial project and associated connection profile in later steps.
-   Run `cd database && pwd` to get the full path to your database directory.
-   Update the path in `profiles-example.yml` to point to your DuckDB database location.
+* Switch to the root directory of the generated sample project (e.g. `cd duckdb-dbt-metricflow`)
+* This enables use of the tutorial project and associated connection profile in later steps
+* Run `cd database && pwd` to get the full path to your database directory
+* Update the path in `profiles-example.yml` to point to your DuckDB database location
 
 ## 1. Metricflow
 
@@ -258,36 +258,36 @@ exposures.yml
 1. **`name`** - Unique identifier for the exposure
 2. **`description`** - Human-readable description of what the exposure does
 3. **`type`** - Category of downstream tool:
-   - `dashboard` - BI dashboards (Tableau, Looker, etc.)
-   - `application` - Web apps or APIs
-   - `notebook` - Jupyter notebooks or analysis tools
-   - `report` - Static reports or documents
+   * `dashboard` - BI dashboards (Tableau, Looker, etc.)
+   * `application` - Web apps or APIs
+   * `notebook` - Jupyter notebooks or analysis tools
+   * `report` - Static reports or documents
 
 4. **`url`** - Link to the actual downstream tool/report
 5. **`maturity`** - Development stage:
-   - `high` - Production-ready, stable
-   - `medium` - In development, some stability
-   - `low` - Experimental, early stage
+   * `high` - Production-ready, stable
+   * `medium` - In development, some stability
+   * `low` - Experimental, early stage
 
 ### **Relationship Properties:**
 
 6. **`owner`** - Responsible team/person:
-   - `name` - Team or person name
-   - `email` - Contact information
+   * `name` - Team or person name
+   * `email` - Contact information
 
 7. **`depends_on`** - Which dbt models this exposure uses:
-   - `ref('model_name')` - References to your dbt models
-   - Creates data lineage tracking
+   * `ref('model_name')` - References to your dbt models
+   * Creates data lineage tracking
 
 8. **`tags`** - Categorization for filtering/organization
 
 Dbt exposures help you:
 
-- **Track downstream usage** of your data models
-- **Maintain data lineage** from source to consumption
-- **Identify impact** when models change
-- **Document ownership** and responsibility
-- **Organize by maturity** and team
+* **Track downstream usage** of your data models
+* **Maintain data lineage** from source to consumption
+* **Identify impact** when models change
+* **Document ownership** and responsibility
+* **Organize by maturity** and team
 
 This creates a complete picture of how your dbt models are consumed across the organization!
 
