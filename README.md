@@ -1,14 +1,19 @@
 # duckdb-dbt-metricflow
 
-Testing metricflow on duckdb - dbt
+Testing metricflow, dbt exposure and collibri - dbt on duckdb
 
-🤓 Please run the following steps:
+## Set up
 
-1. Switch to the root directory of the generated sample project (e.g. `cd mf_tutorial_project`).
+Switch to the root directory of the generated sample project (e.g. `cd duckdb-dbt-metricflow`).
    This enables use of the tutorial project and associated connection profile in later steps.
    Run `cd database && pwd` to get the full path to your database directory.
    Update the path in `profiles-example.yml` to point to your DuckDB database location.
 
+## 1. Metricflow
+
+🤓 Please run the following steps:
+
+1. Run `dbt debug` to test the connection
 2. Run `dbt build` to seed tables and produce artifacts.
 
 3. Try validating your data model:
@@ -206,3 +211,112 @@ Testing metricflow on duckdb - dbt
 12. Before integrating metrics into your project, read up on [adding a time spine](https://docs.getdbt.com/docs/build/metricflow-time-spine?version=1.10).
 
 If you found MetricFlow to be helpful, consider adding a [Github star](https://github.com/dbt-labs/metricflow) to promote the project.
+
+## 2. dbt exposure
+
+`dbt exposure` is a feature that allows you to document and track downstream use cases of your dbt project, such as dashboards, ML models, or applications that depend on your dbt models. It helps maintain visibility into how your data is being used across the organization.
+
+**File Location:** `models/exposures.yml`
+
+```
+exposures.yml
+├── exposures: (root key)
+    ├── exposure 1: executive_dashboard
+    │   ├── name: "executive_dashboard"
+    │   ├── description: "Executive dashboard showing key business metrics and KPIs"
+    │   ├── type: "dashboard"
+    │   ├── url: "https://company.com/dashboards/executive - demo url"
+    │   ├── maturity: "high"
+    │   ├── owner:
+    │   │   ├── name: "Data Team"
+    │   │   └── email: "data-team@company.com"
+    │   ├── depends_on:
+    │   │   ├── ref('transactions')
+    │   │   ├── ref('customers')
+    │   │   └── ref('countries')
+    │   └── tags: ['executive', 'dashboard', 'kpi']
+    │
+    ├── exposure 2: transaction_analytics_report
+    │   ├── name: "transaction_analytics_report"
+    │   ├── description: "Detailed transaction analytics report for business analysts"
+    │   ├── type: "notebook"
+    │   ├── url: "https://company.com/notebooks/transaction-analytics"
+    │   ├── maturity: "medium"
+    │   ├── owner:
+    │   │   ├── name: "Analytics Team"
+    │   │   └── email: "analytics@company.com"
+    │   ├── depends_on:
+    │   │   ├── ref('transactions')
+    │   │   └── ref('customers')
+    │   └── tags: ['analytics', 'transactions', 'report']
+    │
+    └── ... (6 more exposures with similar structure)
+```
+
+### **Core Properties:**
+
+1. **`name`** - Unique identifier for the exposure
+2. **`description`** - Human-readable description of what the exposure does
+3. **`type`** - Category of downstream tool:
+   - `dashboard` - BI dashboards (Tableau, Looker, etc.)
+   - `application` - Web apps or APIs
+   - `notebook` - Jupyter notebooks or analysis tools
+   - `report` - Static reports or documents
+
+4. **`url`** - Link to the actual downstream tool/report
+5. **`maturity`** - Development stage:
+   - `high` - Production-ready, stable
+   - `medium` - In development, some stability
+   - `low` - Experimental, early stage
+
+### **Relationship Properties:**
+
+6. **`owner`** - Responsible team/person:
+   - `name` - Team or person name
+   - `email` - Contact information
+
+7. **`depends_on`** - Which dbt models this exposure uses:
+   - `ref('model_name')` - References to your dbt models
+   - Creates data lineage tracking
+
+8. **`tags`** - Categorization for filtering/organization
+
+Dbt exposures help you:
+
+- **Track downstream usage** of your data models
+- **Maintain data lineage** from source to consumption
+- **Identify impact** when models change
+- **Document ownership** and responsibility
+- **Organize by maturity** and team
+
+This creates a complete picture of how your dbt models are consumed across the organization!
+
+### **Generating and Viewing Documentation**
+
+To generate and view dbt documentation locally:
+
+1. **Compile your project:**
+
+   ```bash
+   dbt compile
+   ```
+
+   This creates the compiled SQL and manifest files.
+
+2. **Generate the documentation:**
+
+   ```bash
+   dbt docs generate
+   ```
+
+   This creates the catalog and website artifacts.
+
+3. **Start the docs server:**
+
+   ```bash
+   dbt docs serve --port 8081 
+   ```
+
+   This launches the documentation site at <http://localhost:8081>
+
+The documentation includes your exposures, models, sources, and their relationships!

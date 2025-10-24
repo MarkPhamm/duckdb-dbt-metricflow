@@ -1,0 +1,106 @@
+exposures:
+  - name: executive_dashboard
+    description: Executive dashboard showing key business metrics and KPIs
+    type: dashboard
+    url: https://company.com/dashboards/executive # demo url
+    maturity: high
+    owner:
+      name: Data Team
+      email: data-team@company.com
+    depends_on:
+      - ref('transactions')
+      - ref('customers')
+      - ref('countries')
+    tags: ['executive', 'dashboard', 'kpi']
+    
+  - name: transaction_analytics_report
+    description: Detailed transaction analytics report for business analysts
+    type: notebook
+    url: https://company.com/notebooks/transaction-analytics
+    maturity: medium
+    owner:
+      name: Analytics Team
+      email: analytics@company.com
+    depends_on:
+      - ref('transactions')
+      - ref('customers')
+    tags: ['analytics', 'transactions', 'report']
+    
+  - name: customer_metrics_api
+    description: API endpoint serving customer-related metrics for mobile app
+    type: application
+    url: https://api.company.com/v1/customer-metrics
+    maturity: high
+    owner:
+      name: Engineering Team
+      email: engineering@company.com
+    depends_on:
+      - ref('customers')
+      - ref('transactions')
+    tags: ['api', 'mobile', 'customer']
+    
+  - name: revenue_reporting_tool
+    description: Revenue reporting tool used by finance team
+    type: application
+    url: https://finance.company.com/revenue-dashboard
+    maturity: high
+    owner:
+      name: Finance Team
+      email: finance@company.com
+    depends_on:
+      - ref('transactions')
+      - ref('customers')
+      - ref('countries')
+    tags: ['finance', 'revenue', 'reporting']
+    
+  - name: regional_performance_dashboard
+    description: Regional performance dashboard for sales team
+    type: dashboard
+    url: https://sales.company.com/regional-performance
+    maturity: medium
+    owner:
+      name: Sales Operations
+      email: sales-ops@company.com
+    depends_on:
+      - ref('transactions')
+      - ref('customers')
+      - ref('countries')
+    tags: ['sales', 'regional', 'performance']
+    
+  - name: data_science_notebook
+    description: Jupyter notebook for customer segmentation analysis
+    type: notebook
+    url: https://databricks.company.com/notebooks/customer-segmentation
+    maturity: low
+    owner:
+      name: Data Science Team
+      email: data-science@company.com
+    depends_on:
+      - ref('customers')
+      - ref('transactions')
+    tags: ['data-science', 'segmentation', 'analysis']
+    
+  - name: quick_buy_metrics_api
+    description: API serving quick buy transaction metrics for product team
+    type: application
+    url: https://api.company.com/v1/quick-buy-metrics
+    maturity: medium
+    owner:
+      name: Product Team
+      email: product@company.com
+    depends_on:
+      - ref('transactions')
+    tags: ['api', 'product', 'quick-buy']
+    
+  - name: cancellation_analysis_report
+    description: Monthly cancellation analysis report for operations team
+    type: analysis
+    url: https://ops.company.com/reports/cancellation-analysis
+    maturity: high
+    owner:
+      name: Operations Team
+      email: operations@company.com
+    depends_on:
+      - ref('transactions')
+      - ref('customers')
+    tags: ['operations', 'cancellation', 'monthly']
