@@ -2,54 +2,46 @@
 
 Testing MetricFlow, dbt exposures, and dbt on DuckDB.
 
-This branch runs the sample project on **dbt v2.0.4** (GA). DuckDB is supported as a **CLI-only** adapter in v2.
+This project runs on **dbt v2.0.4** (formerly Fusion). DuckDB is a **CLI-only** adapter in v2 and is bundled with the `dbt` package.
 
 ## Set up (dbt v2)
-
-Copy the example profile, then install one or both v2 distributions in isolated environments. Both binaries are named `dbt`, so they cannot share a venv.
 
 ```bash
 cp profiles-example.yml profiles.yml
 mkdir -p database
 
-# Recommended distribution (formerly Fusion)
-uv venv .venvs/dbt --python 3.12
-uv pip install --python .venvs/dbt/bin/python dbt
-
-# Apache-only distribution (formerly Core v2)
-uv venv .venvs/dbt-oss --python 3.12
-uv pip install --python .venvs/dbt-oss/bin/python dbt-oss
-
-# MetricFlow still uses a Python adapter to query DuckDB
-uv venv .venvs/mf --python 3.12
-uv pip install --python .venvs/mf/bin/python 'dbt-metricflow[dbt-duckdb]'
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-Use a relative DuckDB path (`./database/mf_tutorial.duckdb`) in `profiles.yml`. Then:
+`requirements.txt` pins `dbt==2.0.4`. Do not install `dbt-core` into this environment; it overwrites the v2 `dbt` package. Then:
 
 ```bash
 export DBT_PROFILES_DIR="$PWD"
 
-.venvs/dbt/bin/dbt --version          # dbt 2.0.4
-.venvs/dbt-oss/bin/dbt --version      # dbt-oss 2.0.4
-
-.venvs/dbt/bin/dbt deps
-.venvs/dbt/bin/dbt debug
-.venvs/dbt/bin/dbt build
-.venvs/dbt/bin/dbt show --select transactions --limit 5
-.venvs/dbt/bin/dbt lint
-.venvs/dbt/bin/dbt docs generate
+dbt --version          # dbt 2.0.4
+dbt deps
+dbt debug
+dbt build
+dbt show --select transactions --limit 5
+dbt lint
+dbt docs generate
 ```
 
-`dbt-oss` can parse/debug/build the same project. Native `dbt lint` and `dbt sl` live in the full `dbt` distribution. `dbt sl validate` needs a dbt platform project (`dbt_cloud.yml`); locally, use MetricFlow instead:
+`dbt sl validate` needs a dbt platform project (`dbt_cloud.yml`). Locally, query metrics with MetricFlow in a **second** venv:
 
 ```bash
-.venvs/mf/bin/mf validate-configs
-.venvs/mf/bin/mf list metrics
-.venvs/mf/bin/mf query --metrics transactions --group-by metric_time --order metric_time
+python3.12 -m venv .venv-mf
+source .venv-mf/bin/activate
+pip install -r requirements-metricflow.txt
+
+mf validate-configs
+mf list metrics
+mf query --metrics transactions --group-by metric_time --order metric_time
 ```
 
-Semantic models were migrated to the latest YAML spec (`semantic_model` nested under each model). `dbt parse` may warn `Skipping semantic manifest validation due to: No dbt_cloud.yml config`; that is expected without a dbt platform login.
+Semantic models use the latest YAML spec (`semantic_model` nested under each model). `dbt parse` may warn `Skipping semantic manifest validation due to: No dbt_cloud.yml config`; that is expected without a dbt platform login.
 
 <img width="1563" height="1128" alt="image" src="https://github.com/user-attachments/assets/7d28a936-43e1-443d-a766-85b14903707a" />
 
