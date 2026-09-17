@@ -1,5 +1,7 @@
-semantic_models:
+models:
   - name: transactions
+    semantic_model:
+      enabled: true
     description: |
       Each row represents one transaction. There
       will be a new row for any cancellations or alterations.
@@ -7,61 +9,112 @@ semantic_models:
       every transaction. There is only one transaction id per
       transaction, but there can be many rows per order id and
       customer id. The `ds` or date is reflected in UTC.
-    defaults:
-      agg_time_dimension: ds
-    model: ref('transactions')
-    entities:
-      - name: transaction
-        type: primary
-        expr: id_transaction
-      - name: customer
-        type: foreign
-        expr: id_customer
+    agg_time_dimension: ds
+    columns:
+      - name: id_transaction
+        entity:
+          type: primary
+          name: transaction
+      - name: id_customer
+        entity:
+          type: foreign
+          name: customer
       - name: id_order
-        type: foreign
-    measures:
-      - name: transaction_amount_usd
-        description: The total USD value of the transaction.
-        agg: SUM
-      - name: transactions
-        description: The total number of transactions.
-        expr: "1"
-        agg: SUM
-      - name: quick_buy_amount_usd
-        description: The total USD value of the transactions that were
-                    purchased using the "quick buy" button.
-        expr: CASE WHEN transaction_type_name = 'quick-buy' THEN transaction_amount_usd ELSE 0 END
-        agg: SUM
+        entity:
+          type: foreign
+      - name: ds
+        dimension:
+          type: time
+        granularity: day
+    derived_semantics:
+      entities: []
+      dimensions:
+        - name: is_large
+          type: categorical
+          expr: CASE WHEN transaction_amount_usd >= 30 THEN TRUE ELSE FALSE END
+        - name: quick_buy_transaction
+          type: categorical
+          expr: |-
+            CASE
+              WHEN transaction_type_name = 'quick-buy' THEN 'Quick Buy'
+              ELSE 'Not Quick Buy'
+            END
+    metrics:
       - name: quick_buy_transactions
-        description: The total transactions bought as quick buy.
+        type: simple
+        label: "Quick Buy Transactions"
+        agg: sum_boolean
         expr: CASE WHEN transaction_type_name = 'quick-buy' THEN TRUE ELSE FALSE END
-        agg: SUM_BOOLEAN
-      - name: cancellations_usd
-        description: The total USD value of the transactions that were
-                    cancelled.
+      - name: quick_buy_amount_usd
+        type: simple
+        label: "Quick Buy Amount (USD)"
+        agg: sum
+        expr: CASE WHEN transaction_type_name = 'quick-buy' THEN transaction_amount_usd ELSE 0 END
+      - name: cancellations
+        type: simple
+        label: "Cancellations"
+        agg: sum
         expr: CASE WHEN transaction_type_name = 'cancellation' THEN transaction_amount_usd ELSE 0 END
-        agg: SUM
-      - name: alterations_usd
-        description: The total USD value of the transactions that were
-                    altered.
+      - name: transactions
+        type: simple
+        label: "Transactions"
+        agg: sum
+        expr: "1"
+      - name: alterations
+        type: simple
+        label: "Alterations"
+        agg: sum
         expr: CASE WHEN transaction_type_name = 'alteration' THEN transaction_amount_usd ELSE 0 END
-        agg: SUM
+      - name: transaction_amount
+        type: simple
+        label: "Transaction Amount (USD)"
+        agg: sum
+        expr: transaction_amount_usd
+      - name: cancellations_mx
+        type: simple
+        filter: |
+          {{ Dimension('customer__customer_country') }} = 'MX'
+        label: "Cancellations in Mexico"
+        agg: sum
+        expr: CASE WHEN transaction_type_name = 'cancellation' THEN transaction_amount_usd ELSE 0 END
+      - name: transaction_usd_na
+        type: simple
+        filter: |
+          {{ Dimension('country__region', entity_path=['customer']) }} = 'NA'
+        label: "Transaction Amount in NA"
+        agg: sum
+        expr: transaction_amount_usd
       - name: transacting_customers
         description: The distinct count of customers transacting on any given day.
         expr: id_customer
-        agg: COUNT_DISTINCT
-    dimensions:
-      - name: ds
-        type: time
-        type_params:
-          time_granularity: day
-      - name: is_large
-        type: categorical
-        expr: CASE WHEN transaction_amount_usd >= 30 THEN TRUE ELSE FALSE END
-      - name: quick_buy_transaction
-        type: categorical
-        expr: |
-          CASE
-            WHEN transaction_type_name = 'quick-buy' THEN 'Quick Buy'
-            ELSE 'Not Quick Buy'
-          END
+        agg: count_distinct
+        type: simple
+        hidden: true
+      - name: cancellation_rate
+        type: ratio
+        label: "Cancellation Rate"
+        numerator: cancellations
+        denominator: transaction_amount
+      - name: revenue_usd
+        type: derived
+        label: "Revenue (USD)"
+        expr: transaction_amount - cancellations + alterations
+        input_metrics:
+          - name: transaction_amount
+          - name: cancellations
+          - name: alterations
+      - name: transactions_1
+        description: The total number of transactions.
+        expr: "1"
+        agg: sum
+        type: simple
+        hidden: true
+      - name: cumulative_transactions
+        label: "Total Transactions"
+        type: cumulative
+        input_metric: transactions_1
+      - name: cumulative_transactions_in_last_7_days
+        label: "Total Transaction in the Last 7 Days"
+        type: cumulative
+        window: 7 days
+        input_metric: transactions_1

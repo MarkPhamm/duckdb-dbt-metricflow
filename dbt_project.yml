@@ -3,6 +3,13 @@ version: 1.0.0
 config-version: 2
 
 profile: mf_tutorial
+require-dbt-version: [">=2.0.0", "<3.0.0"]
 
 model-paths: ["models"]
 seed-paths: ["seeds"]
+clean-targets:
+  - target
+  - dbt_packages
+
+flags:
+  require_generic_test_arguments_property: true

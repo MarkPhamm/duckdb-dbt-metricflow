@@ -1,11 +1,12 @@
-semantic_models:
+models:
   - name: countries
+    semantic_model:
+      enabled: true
     description: Regions mapped to countries.
-    model: ref('countries')
-    entities:
+    columns:
       - name: country
-        type: primary
-    dimensions:
+        entity:
+          type: primary
       - name: region
-        description: The region associated with the country.
-        type: categorical
+        dimension:
+          type: categorical

@@ -11,8 +11,8 @@ exposures:
       - ref('transactions')
       - ref('customers')
       - ref('countries')
-    tags: ['executive', 'dashboard', 'kpi']
-    
+    config:
+      tags: ['executive', 'dashboard', 'kpi']
   - name: transaction_analytics_report
     description: Detailed transaction analytics report for business analysts
     type: notebook
@@ -24,8 +24,8 @@ exposures:
     depends_on:
       - ref('transactions')
       - ref('customers')
-    tags: ['analytics', 'transactions', 'report']
-    
+    config:
+      tags: ['analytics', 'transactions', 'report']
   - name: customer_metrics_api
     description: API endpoint serving customer-related metrics for mobile app
     type: application
@@ -37,8 +37,8 @@ exposures:
     depends_on:
       - ref('customers')
       - ref('transactions')
-    tags: ['api', 'mobile', 'customer']
-    
+    config:
+      tags: ['api', 'mobile', 'customer']
   - name: revenue_reporting_tool
     description: Revenue reporting tool used by finance team
     type: application
@@ -51,8 +51,8 @@ exposures:
       - ref('transactions')
       - ref('customers')
       - ref('countries')
-    tags: ['finance', 'revenue', 'reporting']
-    
+    config:
+      tags: ['finance', 'revenue', 'reporting']
   - name: regional_performance_dashboard
     description: Regional performance dashboard for sales team
     type: dashboard
@@ -65,8 +65,8 @@ exposures:
       - ref('transactions')
       - ref('customers')
       - ref('countries')
-    tags: ['sales', 'regional', 'performance']
-    
+    config:
+      tags: ['sales', 'regional', 'performance']
   - name: data_science_notebook
     description: Jupyter notebook for customer segmentation analysis
     type: notebook
@@ -78,8 +78,8 @@ exposures:
     depends_on:
       - ref('customers')
       - ref('transactions')
-    tags: ['data-science', 'segmentation', 'analysis']
-    
+    config:
+      tags: ['data-science', 'segmentation', 'analysis']
   - name: quick_buy_metrics_api
     description: API serving quick buy transaction metrics for product team
     type: application
@@ -90,8 +90,8 @@ exposures:
       email: product@company.com
     depends_on:
       - ref('transactions')
-    tags: ['api', 'product', 'quick-buy']
-    
+    config:
+      tags: ['api', 'product', 'quick-buy']
   - name: cancellation_analysis_report
     description: Monthly cancellation analysis report for operations team
     type: analysis
@@ -103,4 +103,5 @@ exposures:
     depends_on:
       - ref('transactions')
       - ref('customers')
-    tags: ['operations', 'cancellation', 'monthly']
+    config:
+      tags: ['operations', 'cancellation', 'monthly']

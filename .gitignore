@@ -138,6 +138,7 @@ celerybeat.pid
 .env
 .envrc
 .venv
+.venvs/
 env/
 venv/
 ENV/
@@ -209,3 +210,9 @@ __marimo__/
 # dbt
 .user.yml
 profiles.yml
+dbt_packages/
+logs/
+*.duckdb
+*.duckdb.wal
+database/
+dbt_internal_packages/
