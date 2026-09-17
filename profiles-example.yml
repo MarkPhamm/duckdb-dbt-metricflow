@@ -3,5 +3,7 @@ mf_tutorial:
   outputs:
     dev:
       type: duckdb
-      path: 'path-to-your-duckdb-database'
+      path: ./database/mf_tutorial.duckdb
+      schema: main
+      threads: 4
 

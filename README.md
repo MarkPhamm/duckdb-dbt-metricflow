@@ -1,17 +1,52 @@
 # duckdb-dbt-metricflow
 
-Testing metricflow, dbt exposure and collibri - dbt on duckdb
+Testing MetricFlow, dbt exposures, and dbt on DuckDB.
 
-## Set up
+This project runs on **dbt v2.0.4** (formerly Fusion). DuckDB is a **CLI-only** adapter in v2 and is bundled with the `dbt` package.
 
-* Switch to the root directory of the generated sample project (e.g. `cd duckdb-dbt-metricflow`)
-* This enables use of the tutorial project and associated connection profile in later steps
-* Run `cd database && pwd` to get the full path to your database directory
-* Update the path in `profiles-example.yml` to point to your DuckDB database location
+## Set up (dbt v2)
+
+```bash
+cp profiles-example.yml profiles.yml
+mkdir -p database
+
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+`requirements.txt` pins `dbt==2.0.4`. Do not install `dbt-core` into this environment; it overwrites the v2 `dbt` package. Then:
+
+```bash
+export DBT_PROFILES_DIR="$PWD"
+
+dbt --version          # dbt 2.0.4
+dbt deps
+dbt debug
+dbt build
+dbt show --select transactions --limit 5
+dbt lint
+dbt docs generate
+```
+
+`dbt sl validate` needs a dbt platform project (`dbt_cloud.yml`). Locally, query metrics with MetricFlow in a **second** venv:
+
+```bash
+python3.12 -m venv .venv-mf
+source .venv-mf/bin/activate
+pip install -r requirements-metricflow.txt
+
+mf validate-configs
+mf list metrics
+mf query --metrics transactions --group-by metric_time --order metric_time
+```
+
+Semantic models use the latest YAML spec (`semantic_model` nested under each model). `dbt parse` may warn `Skipping semantic manifest validation due to: No dbt_cloud.yml config`; that is expected without a dbt platform login.
 
 <img width="1563" height="1128" alt="image" src="https://github.com/user-attachments/assets/7d28a936-43e1-443d-a766-85b14903707a" />
 
 ## 1. Metricflow
+
 
 🤓 Please run the following steps:
 

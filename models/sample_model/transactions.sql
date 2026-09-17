@@ -1,3 +1,3 @@
 select
     *
-from {{ref('transactions_seed')}}
+from {{ ref('transactions_seed') }}
